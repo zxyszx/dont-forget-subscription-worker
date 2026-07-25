@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "dont-forget-subscription",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-25",
+  "observability": {
+    "enabled": true
+  },
+  "triggers": {
+    "crons": ["0 1 * * *"]
+  },
+  "vars": {
+    "APP_NAME": "别忘订阅",
+    "APP_VERSION": "0.1.0"
+  }
+}
