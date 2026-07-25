@@ -1,8 +1,8 @@
 {
   "name": "dont-forget-subscription-worker",
-  "version": "0.1.0",
+  "version": "0.8.0",
   "private": true,
-  "description": "别忘订阅 - Cloudflare Workers subscription seat manager MVP",
+  "description": "别忘订阅 V8 - Cloudflare Workers subscription seat manager",
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
