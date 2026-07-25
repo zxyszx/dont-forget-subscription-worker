@@ -1,6 +1,6 @@
 # 别忘订阅 - Cloudflare Workers
 
-共享会员车位管理 + 续费提醒 + 财务利润分析系统的 Cloudflare Workers MVP。V8.1 继续优化 Cloudflare 控制台风格的纯白后台 UI。
+共享会员车位管理 + 续费提醒 + 财务利润分析系统的 Cloudflare Workers MVP。V8.2 按 Cloudflare 控制台比例继续收紧字号、间距和布局密度。
 
 [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/zxyszx/dont-forget-subscription-worker)
 

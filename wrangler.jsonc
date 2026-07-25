@@ -11,6 +11,6 @@
   },
   "vars": {
     "APP_NAME": "别忘订阅",
-    "APP_VERSION": "0.8.1"
+    "APP_VERSION": "0.8.2"
   }
 }
