@@ -1,13 +1,13 @@
 # 别忘订阅 - Cloudflare Workers
 
-共享会员车位管理 + 续费提醒 + 财务利润分析系统的 Cloudflare Workers MVP。V8 已升级为 Cloudflare 控制台风格的纯白后台 UI。
+共享会员车位管理 + 续费提醒 + 财务利润分析系统的 Cloudflare Workers MVP。V8.1 继续优化 Cloudflare 控制台风格的纯白后台 UI。
 
 [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/zxyszx/dont-forget-subscription-worker)
 
 ## 功能
 
 - Workers 原生部署，无服务器运维。
-- 纯白控制台布局、线性图标侧栏、顶部工具区和响应式移动端。
+- 纯白控制台布局、线性图标侧栏、顶部工具区、卡片化数据面板和响应式移动端。
 - 订阅车位、订阅详情、新增订阅、成员管理、成员详情、移除关系弹窗。
 - 到期提醒、续费日历、财务统计、Telegram 设置页面。
 - `/api/summary` 和 `/api/subscriptions` mock API，后续可平滑接入 D1。

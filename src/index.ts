@@ -271,6 +271,7 @@ function sprite(): string {
       <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
       <symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></symbol>
       <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+      <symbol id="i-send" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></symbol>
       <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07A19.4 19.4 0 0 1 5.15 12.8 19.8 19.8 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.9.32 1.77.6 2.6a2 2 0 0 1-.45 2.11L8 9.64a16 16 0 0 0 6.36 6.36l1.21-1.21a2 2 0 0 1 2.11-.45c.83.28 1.7.48 2.6.6A2 2 0 0 1 22 16.92Z"/></symbol>
       <symbol id="i-credit" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></symbol>
       <symbol id="i-key" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m12 12 8-8"/><path d="m16 8 2 2"/><path d="m19 5 2 2"/></symbol>
@@ -283,9 +284,9 @@ function sprite(): string {
 }
 
 function statusTone(status: string): string {
-  if (status === "正常" || status === "已发送" || status === "已付款") return "success";
+  if (status === "正常" || status === "已发送" || status === "已付款" || status === "使用中") return "success";
   if (status === "即将到期" || status === "待发送" || status === "未付款") return "warning";
-  if (status === "已过期" || status === "已停用") return "danger";
+  if (status === "已过期" || status === "已停用" || status === "未处理" || status === "停用") return "danger";
   return "neutral";
 }
 
@@ -345,7 +346,7 @@ function layout(env: Env, active: PageKey, title: string, content: string, actio
     body { margin: 0; min-width: 0; background: var(--bg); color: var(--ink); line-height: 1.5; }
     a { color: inherit; text-decoration: none; }
     button, input, select, textarea { font: inherit; }
-    button, .button, .nav-item, .row-link, .icon-button { cursor: pointer; }
+    button, .button, .nav-item, .row-link, .icon-button, .filter-pill, .tab, .settings-tabs a, .segment, .toggle { cursor: pointer; }
     :focus-visible { outline: 3px solid rgba(243, 128, 32, .32); outline-offset: 2px; }
     .sprite { position: absolute; }
     .icon { width: 20px; height: 20px; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; fill: none; flex: 0 0 auto; }
@@ -372,7 +373,7 @@ function layout(env: Env, active: PageKey, title: string, content: string, actio
     .side-footer { margin-top: 26px; padding-top: 14px; border-top: 1px solid var(--line); }
     .main { min-width: 0; }
     .topbar { display: flex; align-items: center; justify-content: flex-end; gap: 16px; min-height: 74px; padding: 0 30px; border-bottom: 1px solid var(--line-soft); background: #fff; }
-    .topbar a, .topbar button { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; border: 0; background: transparent; color: #3d3d3d; font-weight: 720; }
+    .topbar a, .topbar button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 44px; min-height: 44px; border: 0; background: transparent; color: #3d3d3d; font-weight: 720; }
     .topbar .dot { width: 8px; height: 8px; border-radius: 999px; background: #ef4444; box-shadow: 0 0 0 4px #fee2e2; }
     .user-chip { display: inline-flex; align-items: center; gap: 10px; }
     .workspace { width: min(1360px, 100%); margin: 0 auto; padding: 36px 34px 42px; }
@@ -380,21 +381,33 @@ function layout(env: Env, active: PageKey, title: string, content: string, actio
     .page-title h1 { margin: 0; color: #151515; font-size: 29px; line-height: 1.25; letter-spacing: 0; }
     .page-title p { margin: 7px 0 0; color: var(--muted); font-size: 15px; }
     .actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
-    .button, .icon-button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 42px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: #202020; font-weight: 760; box-shadow: 0 1px 1px rgba(0,0,0,.03); }
+    .button, .icon-button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 44px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: #202020; font-weight: 760; box-shadow: 0 1px 1px rgba(0,0,0,.03); transition: border-color .18s ease, background .18s ease, color .18s ease, box-shadow .18s ease; }
     .button { padding: 0 14px; }
+    .button:hover, .icon-button:hover, .filter-pill:hover { border-color: #cfcfcf; background: #fafafa; }
     .button.primary { border-color: #202020; background: #202020; color: #fff; }
+    .button.primary:hover { border-color: #111; background: #111; }
     .button.orange { border-color: var(--orange); background: var(--orange); color: #fff; }
     .button.danger { border-color: #fecaca; background: #fff; color: var(--red); }
-    .icon-button { width: 42px; padding: 0; }
+    .icon-button { width: 44px; min-width: 44px; flex: 0 0 44px; padding: 0; }
+    .icon-button.previous .icon { transform: rotate(180deg); }
     .search-hero { display: flex; align-items: center; gap: 12px; min-height: 58px; margin: 0 auto 26px; padding: 0 17px; border: 1px solid var(--line); border-radius: 16px; background: #fff; box-shadow: 0 0 0 8px rgba(0, 0, 0, .018), inset 0 0 0 1px rgba(0,0,0,.02); color: var(--subtle); }
     .search-hero input { width: 100%; min-width: 0; border: 0; outline: 0; color: var(--ink); background: transparent; font-size: 16px; }
     .search-hero kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 28px; border: 1px solid var(--line); border-radius: 7px; color: #666; background: #fafafa; font-size: 13px; font-weight: 750; }
-    .kpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; margin-bottom: 24px; }
+    .kpis { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; margin-bottom: 24px; }
+    .kpis.compact { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     .panel, .card, .metric-card { min-width: 0; border: 1px solid var(--line-soft); border-radius: 12px; background: #fff; box-shadow: var(--shadow); }
-    .metric-card { min-width: 0; padding: 18px; }
+    .metric-card { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-width: 0; padding: 18px; }
     .metric-card span { color: var(--muted); font-size: 13px; font-weight: 750; }
     .metric-card strong { display: block; margin: 7px 0 2px; font-size: 28px; line-height: 1.1; font-weight: 790; letter-spacing: 0; font-variant-numeric: tabular-nums; }
     .metric-card small { color: var(--green); font-size: 13px; font-weight: 730; }
+    .metric-icon { display: grid; place-items: center; width: 46px; height: 46px; border: 1px solid var(--line-soft); border-radius: 12px; flex: 0 0 auto; }
+    .metric-icon .icon { width: 22px; height: 22px; }
+    .tone-blue { color: #2563eb; background: #eff6ff; }
+    .tone-green { color: #059669; background: #ecfdf5; }
+    .tone-orange { color: #ea580c; background: #fff7ed; }
+    .tone-red { color: #dc2626; background: #fef2f2; }
+    .tone-purple { color: #7c3aed; background: #f5f3ff; }
+    .tone-gray { color: #525252; background: #f5f5f5; }
     .section-grid { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 20px; align-items: start; }
     .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 58px; padding: 0 18px; border-bottom: 1px solid var(--line-soft); }
     .panel-head h2 { margin: 0; font-size: 17px; letter-spacing: 0; }
@@ -427,6 +440,29 @@ function layout(env: Env, active: PageKey, title: string, content: string, actio
     .progress .bar span { display: block; height: 100%; border-radius: inherit; background: #202020; }
     .progress strong { min-width: 45px; font-variant-numeric: tabular-nums; }
     .row-actions { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+    .filter-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: -4px 0 20px; }
+    .filter-pill { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 13px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: #3f3f3f; font-weight: 700; }
+    .filter-pill .icon { width: 17px; height: 17px; color: #777; }
+    .tabs { display: flex; align-items: center; gap: 20px; min-height: 52px; padding: 0 18px; border-bottom: 1px solid var(--line-soft); overflow-x: auto; }
+    .tab { position: relative; display: inline-flex; align-items: center; min-height: 52px; color: var(--muted); font-weight: 760; white-space: nowrap; }
+    .tab.active { color: #111; }
+    .tab.active::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; border-radius: 999px; background: #202020; }
+    .subscription-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 20px; }
+    .subscription-card { min-width: 0; padding: 18px; border: 1px solid var(--line-soft); border-radius: 12px; background: #fff; box-shadow: var(--shadow); transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease; }
+    .subscription-card:hover, .subscription-card:focus-within { border-color: #d4d4d4; transform: translateY(-1px); box-shadow: 0 10px 32px rgba(0,0,0,.07); }
+    .subscription-card .card-top { margin-bottom: 18px; }
+    .seat-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; margin: 14px 0; }
+    .seat-meta span { color: var(--muted); font-size: 12px; font-weight: 720; }
+    .seat-meta strong { display: block; margin-top: 3px; color: #202020; font-size: 14px; font-variant-numeric: tabular-nums; }
+    .member-stack { display: flex; align-items: center; gap: 8px; min-height: 42px; margin: 14px 0; overflow: hidden; }
+    .member-stack .avatar { width: 32px; height: 32px; font-size: 13px; box-shadow: 0 0 0 2px #fff; }
+    .slot-empty { display: grid; place-items: center; width: 32px; height: 32px; border: 1px dashed #cfcfcf; border-radius: 999px; color: #777; background: #fff; font-weight: 800; }
+    .finance-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 12px; border-radius: 10px; background: #f7f7f7; }
+    .finance-strip span { color: var(--muted); font-size: 12px; font-weight: 720; }
+    .finance-strip strong { display: block; color: #202020; font-size: 14px; font-variant-numeric: tabular-nums; }
+    .finance-strip strong.positive { color: var(--green); }
+    .empty-card { display: grid; place-items: center; min-height: 272px; border: 1px dashed #d4d4d4; border-radius: 12px; background: #fff; color: var(--muted); text-align: center; }
+    .empty-card .mini-icon { width: 58px; height: 58px; border-radius: 999px; margin: 0 auto 12px; }
     .sidebar-list { display: grid; gap: 12px; padding: 16px; }
     .list-item { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px; border-radius: 10px; transition: background .18s ease; }
     .list-item:hover { background: #f7f7f7; }
@@ -440,6 +476,13 @@ function layout(env: Env, active: PageKey, title: string, content: string, actio
     .card h3 { margin: 0; font-size: 18px; line-height: 1.25; letter-spacing: 0; }
     .card p { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
     .detail-grid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 20px; align-items: start; }
+    .profile-panel { padding: 22px; }
+    .profile-top { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 22px; align-items: center; }
+    .profile-photo { display: grid; place-items: center; width: 94px; height: 94px; border-radius: 999px; background: linear-gradient(135deg, #f97316, #2563eb); color: #fff; font-size: 34px; font-weight: 820; }
+    .profile-copy h2 { margin: 0; font-size: 28px; letter-spacing: 0; }
+    .profile-copy p { display: flex; align-items: center; gap: 8px; margin: 7px 0 0; color: var(--muted); }
+    .status-line { display: grid; gap: 8px; justify-items: end; color: var(--muted); font-weight: 730; }
+    .status-dot { display: inline-block; width: 9px; height: 9px; border-radius: 999px; background: #22c55e; box-shadow: 0 0 0 5px #dcfce7; }
     .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
     .fact { padding: 14px; border: 1px solid var(--line-soft); border-radius: 10px; background: #fff; }
     .fact span { color: var(--muted); font-size: 12px; font-weight: 720; }
@@ -450,11 +493,20 @@ function layout(env: Env, active: PageKey, title: string, content: string, actio
     label { color: #2a2a2a; font-size: 13px; font-weight: 760; }
     input, select, textarea { width: 100%; min-height: 44px; border: 1px solid var(--line); border-radius: 10px; padding: 0 12px; background: #fff; color: var(--ink); }
     textarea { min-height: 96px; padding: 12px; resize: vertical; }
+    .brand-picker { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .brand-option { display: grid; place-items: center; width: 58px; height: 58px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: #fff; font-weight: 820; }
+    .brand-option.add { border-style: dashed; color: #555; background: #fff; }
+    .segmented { display: flex; gap: 10px; flex-wrap: wrap; }
+    .segment { display: inline-flex; align-items: center; justify-content: center; min-width: 74px; min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 10px; background: #fff; font-weight: 760; }
+    .segment.active { border-color: #202020; box-shadow: 0 0 0 3px rgba(0,0,0,.06); }
+    .rule-box { grid-column: 1 / -1; padding: 16px; border: 1px solid #bfdbfe; border-radius: 10px; background: #fff; }
+    .rule-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .rule-item { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 10px; align-items: center; padding: 12px; border: 1px solid var(--line-soft); border-radius: 10px; }
     .calendar { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-top: 1px solid var(--line-soft); border-left: 1px solid var(--line-soft); }
     .day, .weekday { min-height: 112px; padding: 12px; border-right: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft); background: #fff; }
     .weekday { min-height: auto; color: var(--muted); font-size: 12px; font-weight: 780; background: #fafafa; }
     .day b { display: block; font-size: 13px; }
-    .event { display: block; margin-top: 8px; padding: 6px 8px; border-radius: 8px; background: #f5f5f5; color: #333; font-size: 12px; font-weight: 720; overflow-wrap: anywhere; }
+    .event { display: flex; align-items: center; min-height: 44px; margin-top: 8px; padding: 6px 8px; border-radius: 8px; background: #f5f5f5; color: #333; font-size: 12px; font-weight: 720; overflow-wrap: anywhere; }
     .bars { display: grid; gap: 12px; padding: 18px; }
     .bar-row { display: grid; grid-template-columns: 86px minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
     .bar-track { height: 14px; border-radius: 999px; background: #f1f1f1; overflow: hidden; }
@@ -463,6 +515,41 @@ function layout(env: Env, active: PageKey, title: string, content: string, actio
     .timeline-item { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 12px; align-items: start; }
     .timeline-dot { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 999px; border: 1px solid var(--line); color: #777; background: #fff; }
     .timeline-dot .icon { width: 16px; height: 16px; }
+    .calendar-layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: stretch; }
+    .calendar-tools { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--line-soft); }
+    .calendar-title { font-size: 24px; font-weight: 820; }
+    .event.green { color: #047857; background: #dcfce7; }
+    .event.orange { color: #b45309; background: #ffedd5; }
+    .event.red { color: #b91c1c; background: #fee2e2; }
+    .legend { display: flex; justify-content: center; gap: 22px; flex-wrap: wrap; padding: 16px; color: var(--muted); font-size: 13px; font-weight: 720; }
+    .legend i { display: inline-block; width: 9px; height: 9px; margin-right: 7px; border-radius: 999px; }
+    .finance-grid { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 20px; align-items: stretch; margin-bottom: 20px; }
+    .chart-card { padding: 18px; }
+    .chart-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+    .chart-head h2 { margin: 0; font-size: 18px; }
+    .line-chart { width: 100%; min-width: 0; height: 260px; }
+    .line-chart text { fill: #737373; font-size: 12px; }
+    .line-chart .grid-line { stroke: #e7e7e7; stroke-dasharray: 4 6; }
+    .donut-wrap { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 22px; align-items: center; padding: 18px; }
+    .donut { position: relative; display: grid; place-items: center; width: min(180px, 100%); aspect-ratio: 1; border-radius: 999px; background: conic-gradient(#ef4444 0 45%, #22c55e 45% 70%, #2563eb 70% 85%, #f97316 85% 95%, #14b8a6 95% 100%); }
+    .donut::after { content: ""; position: absolute; width: 92px; height: 92px; border-radius: 999px; background: #fff; box-shadow: inset 0 0 0 1px var(--line-soft); }
+    .donut strong { position: relative; z-index: 1; font-size: 21px; }
+    .breakdown { display: grid; gap: 12px; }
+    .breakdown-row { display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: 2px 10px; align-items: start; font-weight: 730; overflow-wrap: anywhere; }
+    .breakdown-row i { width: 10px; height: 10px; border-radius: 999px; }
+    .breakdown-row strong { grid-column: 2; color: #202020; font-size: 13px; font-variant-numeric: tabular-nums; }
+    .settings-tabs { display: flex; gap: 26px; padding: 0 22px; border-bottom: 1px solid var(--line-soft); overflow-x: auto; }
+    .settings-tabs a { min-height: 58px; display: inline-flex; align-items: center; color: var(--muted); font-weight: 760; white-space: nowrap; }
+    .settings-tabs a.active { color: #111; box-shadow: inset 0 -2px #202020; }
+    .telegram-head { display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 18px; align-items: center; padding: 22px 22px 8px; }
+    .telegram-logo { display: grid; place-items: center; width: 58px; height: 58px; border-radius: 999px; color: #fff; background: #229ed9; }
+    .telegram-logo .icon { width: 28px; height: 28px; }
+    .setting-row { display: grid; grid-template-columns: 48px minmax(0, 1fr) 260px 66px; gap: 18px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line-soft); }
+    .setting-row:last-child { border-bottom: 0; }
+    .toggle { position: relative; display: inline-block; width: 52px; min-width: 52px; height: 44px; border: 0; border-radius: 999px; background: transparent; box-shadow: none; padding: 0; justify-self: end; }
+    .toggle::before { content: ""; position: absolute; left: 0; top: 7px; width: 52px; height: 30px; border-radius: 999px; background: #2563eb; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
+    .toggle::after { content: ""; position: absolute; top: 11px; right: 4px; width: 22px; height: 22px; border-radius: 999px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.22); }
+    .info-note { display: flex; gap: 10px; align-items: flex-start; padding: 14px 16px; border-radius: 10px; background: #f5f7fb; color: #5f6b7a; font-size: 13px; }
     .modal-backdrop { position: fixed; inset: 0; display: grid; place-items: center; padding: 24px; background: rgba(0, 0, 0, .26); z-index: 20; }
     .modal { width: min(440px, 100%); border-radius: 14px; background: #fff; box-shadow: 0 18px 80px rgba(0, 0, 0, .22); }
     .modal .panel-head { min-height: 62px; }
@@ -474,9 +561,9 @@ function layout(env: Env, active: PageKey, title: string, content: string, actio
       *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
     }
     @media (max-width: 1180px) {
-      .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .section-grid, .detail-grid { grid-template-columns: 1fr; }
+      .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .cards, .subscription-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .section-grid, .detail-grid, .calendar-layout, .finance-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 840px) {
       .app { grid-template-columns: 1fr; }
@@ -486,10 +573,10 @@ function layout(env: Env, active: PageKey, title: string, content: string, actio
       .brand-text strong { font-size: 16px; }
       .side-scroll { min-width: 0; overflow: hidden; padding: 10px 12px 8px; }
       .quick-search { display: none; }
-      nav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
-      .nav-group { display: flex; flex: 0 0 auto; gap: 6px; margin: 0; }
+      nav { display: flex; gap: 6px; flex-wrap: wrap; overflow: visible; padding-bottom: 4px; }
+      .nav-group { display: flex; flex: 1 1 100%; flex-wrap: wrap; gap: 6px; margin: 0; }
       .nav-heading, .side-footer { display: none; }
-      .nav-item { min-width: max-content; padding: 0 12px; }
+      .nav-item { min-width: 0; flex: 1 1 calc(50% - 6px); padding: 0 12px; }
       .nav-item .chevron { display: none; }
       .topbar { justify-content: space-between; min-height: 56px; padding: 0 18px; }
       .workspace { padding: 24px 16px 32px; }
@@ -497,7 +584,9 @@ function layout(env: Env, active: PageKey, title: string, content: string, actio
       .page-head .actions { width: 100%; justify-content: flex-start; }
       .page-head, .search-hero, .panel, .table-wrap { max-width: 100%; }
       .search-hero { margin-bottom: 18px; }
-      .cards, .form-grid, .facts { grid-template-columns: 1fr; }
+      .cards, .form-grid, .facts, .subscription-grid, .profile-top, .setting-row, .donut-wrap, .rule-list { grid-template-columns: 1fr; }
+      .status-line { justify-items: start; }
+      .toggle { justify-self: start; }
       .field.full { grid-column: auto; }
       .calendar { grid-template-columns: 1fr; border-left: 0; }
       .weekday { display: none; }
@@ -509,6 +598,11 @@ function layout(env: Env, active: PageKey, title: string, content: string, actio
       .topbar a span, .topbar button span { display: none; }
       .page-title h1 { font-size: 24px; }
       .page-head .button { width: 100%; }
+      .settings-tabs { flex-wrap: wrap; gap: 0 16px; overflow: visible; padding: 0 18px; }
+      .settings-tabs a { min-height: 50px; }
+      .telegram-head { grid-template-columns: 1fr; }
+      .profile-copy h2 { font-size: 24px; }
+      .metric-card strong { font-size: 25px; }
       .row-actions { justify-content: flex-start; }
       .table-wrap { overflow: visible; }
       table, thead, tbody, tr, th, td { display: block; min-width: 0; }
@@ -611,22 +705,26 @@ function renderSearch(placeholder: string): string {
 function renderKpis(): string {
   const summary = getSummary();
   const cards = [
-    ["订阅账号", String(summary.subscriptionCount), "本期 +2"],
-    ["车位使用", `${summary.used} / ${summary.seats}`, `空闲 ${summary.empty}`],
-    ["本期收入", money(summary.income), "当前账期"],
-    ["本期利润", money(summary.profit), `利润率 ${percent(summary.profitRate)}`],
-    ["提醒队列", `${summary.reminders} 条`, "含未付款"]
+    ["订阅账号", String(summary.subscriptionCount), "本期 +2", "car", "tone-blue"],
+    ["总位置", String(summary.seats), `${summary.used} 个已使用`, "users", "tone-purple"],
+    ["已使用", String(summary.used), `空闲 ${summary.empty}`, "shield", "tone-green"],
+    ["本期收入", money(summary.income), "当前账期", "credit", "tone-orange"],
+    ["本期利润", money(summary.profit), `利润率 ${percent(summary.profitRate)}`, "chart", "tone-green"],
+    ["提醒队列", `${summary.reminders} 条`, "含未付款", "bell", "tone-red"]
   ];
 
   return `
     <section class="kpis" aria-label="关键指标">
       ${cards
         .map(
-          ([label, value, note]) => `
+          ([label, value, note, iconName, tone]) => `
         <article class="metric-card">
-          <span>${label}</span>
-          <strong>${value}</strong>
-          <small>${note}</small>
+          <div>
+            <span>${label}</span>
+            <strong>${value}</strong>
+            <small>${note}</small>
+          </div>
+          <span class="metric-icon ${tone}">${icon(iconName)}</span>
         </article>`
         )
         .join("")}
@@ -634,10 +732,90 @@ function renderKpis(): string {
   `;
 }
 
+function subscriptionIncome(item: Subscription): number {
+  return item.members.reduce((sum, member) => sum + member.amount, 0);
+}
+
+function subscriptionProfit(item: Subscription): number {
+  return subscriptionIncome(item) - item.cost;
+}
+
+function toneForIndex(index: number): string {
+  return ["orange", "blue", "green"][index % 3] ?? "gray";
+}
+
+function renderMemberStack(item: Subscription): string {
+  const visibleMembers = item.members.slice(0, 5);
+  const emptySlots = Math.max(0, Math.min(item.capacity - item.members.length, 3));
+
+  return `
+    <div class="member-stack" aria-label="${escapeHtml(item.platform)} 车位成员">
+      ${visibleMembers.map((member, index) => avatar(member.name, toneForIndex(index))).join("")}
+      ${Array.from({ length: emptySlots }, () => `<span class="slot-empty">+</span>`).join("")}
+    </div>
+  `;
+}
+
+function renderSubscriptionCard(item: Subscription): string {
+  const income = subscriptionIncome(item);
+  const profit = subscriptionProfit(item);
+  const used = item.members.length;
+
+  return `
+    <article class="subscription-card">
+      <div class="card-top">
+        <a class="entity" href="/subscriptions/${item.id}">
+          <span class="brand-mark" style="--accent:${item.accent}; width:46px; height:46px;">${escapeHtml(item.platform.slice(0, 1))}</span>
+          <span><strong>${escapeHtml(item.platform)}</strong><small>${escapeHtml(item.seatNo)} · ${escapeHtml(item.category)}</small></span>
+        </a>
+        <button class="icon-button" aria-label="${escapeHtml(item.platform)} 更多操作">${icon("more")}</button>
+      </div>
+      <div class="seat-meta">
+        <div><span>主账号</span><strong>${escapeHtml(item.account)}</strong></div>
+        <div><span>续费日期</span><strong>${escapeHtml(item.renewalDate)}</strong></div>
+        <div><span>成本</span><strong>${money(item.cost)} / ${escapeHtml(item.cycle)}</strong></div>
+        <div><span>容量</span><strong>${used} / ${item.capacity}</strong></div>
+      </div>
+      <div class="progress" aria-label="车位使用 ${used} / ${item.capacity}">
+        <div class="bar" aria-hidden="true"><span style="width:${Math.round((used / item.capacity) * 100)}%"></span></div>
+        <strong>${used}/${item.capacity}</strong>
+      </div>
+      ${renderMemberStack(item)}
+      <div class="finance-strip">
+        <div><span>收入</span><strong>${money(income)}</strong></div>
+        <div><span>成本</span><strong>${money(item.cost)}</strong></div>
+        <div><span>利润</span><strong class="${profit >= 0 ? "positive" : ""}">${money(profit)}</strong></div>
+      </div>
+    </article>
+  `;
+}
+
+function renderFilterBar(items: string[]): string {
+  return `
+    <div class="filter-bar" aria-label="筛选条件">
+      ${items.map((item) => `<button class="filter-pill" type="button"><span>${escapeHtml(item)}</span>${icon("chevron")}</button>`).join("")}
+      <button class="filter-pill" type="button">${icon("refresh")}重置</button>
+    </div>
+  `;
+}
+
 function renderSubscriptionsPage(env: Env): string {
   const actions = `
     <a class="button" href="/api/subscriptions">${icon("link")}接口</a>
     <a class="button primary" href="/subscriptions/new">${icon("plus")}添加订阅</a>
+  `;
+
+  const cards = `
+    <section class="subscription-grid" aria-label="订阅车位卡片">
+      ${SUBSCRIPTIONS.map(renderSubscriptionCard).join("")}
+      <a class="empty-card" href="/subscriptions/new">
+        <span>
+          <span class="mini-icon">${icon("plus")}</span>
+          <strong>添加订阅账号</strong><br>
+          <small>管理更多共享车位</small>
+        </span>
+      </a>
+    </section>
   `;
 
   const table = `
@@ -688,7 +866,13 @@ function renderSubscriptionsPage(env: Env): string {
     </aside>
   `;
 
-  return layout(env, "subscriptions", "订阅车位", `${renderSearch("搜索订阅平台 / 主账号 / 车位")} ${renderKpis()} <div class="section-grid">${table}${side}</div>`, actions);
+  return layout(
+    env,
+    "subscriptions",
+    "订阅车位",
+    `${renderSearch("搜索订阅平台 / 主账号 / 车位")} ${renderKpis()} ${renderFilterBar(["全部平台", "全部状态", "计费周期"])} ${cards} <div class="section-grid">${table}${side}</div>`,
+    actions
+  );
 }
 
 function renderSubscriptionRow(item: Subscription): string {
@@ -732,25 +916,27 @@ function renderSubscriptionDetail(env: Env, subscription: Subscription): string 
   `;
 
   const overview = `
-    <section class="panel">
-      <div class="panel-head">
-        <h2>${escapeHtml(subscription.platform)}</h2>
-        ${badge(subscription.status)}
+    <section class="panel profile-panel">
+      <div class="profile-top">
+        <span class="brand-mark" style="--accent:${subscription.accent}; width:76px; height:76px; font-size:30px;">${escapeHtml(subscription.platform.slice(0, 1))}</span>
+        <div class="profile-copy">
+          <h2>${escapeHtml(subscription.platform)} ${badge(subscription.status === "正常" ? "使用中" : subscription.status)}</h2>
+          <p>${icon("mail")}${escapeHtml(subscription.account)}</p>
+          <p>${escapeHtml(subscription.category)} · ${escapeHtml(subscription.seatNo)}</p>
+        </div>
+        <div class="status-line">
+          <span>容量：<strong>${subscription.members.length} / ${subscription.capacity}</strong></span>
+          <span>计费周期：${escapeHtml(subscription.cycle)}</span>
+        </div>
       </div>
-      <div class="card" style="border:0; box-shadow:none;">
-        <div class="entity">
-          <span class="brand-mark" style="--accent:${subscription.accent}; width:52px; height:52px;">${escapeHtml(subscription.platform.slice(0, 1))}</span>
-          <span><strong>${escapeHtml(subscription.account)}</strong><small>${escapeHtml(subscription.category)} · ${escapeHtml(subscription.seatNo)}</small></span>
-        </div>
-        <div class="facts">
-          <div class="fact"><span>续费日</span><strong>${escapeHtml(subscription.renewalDate)}</strong></div>
-          <div class="fact"><span>席位</span><strong>${subscription.members.length} / ${subscription.capacity}</strong></div>
-          <div class="fact"><span>利润</span><strong>${money(profit)}</strong></div>
-        </div>
+      <div class="facts">
+        <div class="fact"><span>续费时间</span><strong>${escapeHtml(subscription.renewalDate)}</strong></div>
+        <div class="fact"><span>成本</span><strong>${money(subscription.cost)}</strong></div>
+        <div class="fact"><span>利润</span><strong>${money(profit)}</strong></div>
       </div>
     </section>
     <section class="panel">
-      <div class="panel-head"><h2>车位成员</h2><span>${subscription.members.length} 人</span></div>
+      <div class="panel-head"><h2>位置管理</h2><a class="button primary" href="/members">${icon("plus")}添加车友</a></div>
       <div class="table-wrap">
         <table>
           <thead><tr><th>成员</th><th>联系方式</th><th>应收</th><th>到期</th><th>状态</th><th>操作</th></tr></thead>
@@ -794,13 +980,32 @@ function renderNewSubscriptionPage(env: Env): string {
     <section class="panel">
       <div class="panel-head"><h2>新增订阅账号</h2><span>基础信息</span></div>
       <form class="form-grid">
-        <div class="field"><label for="platform">订阅平台</label><input id="platform" value="Apple One" autocomplete="organization" /></div>
-        <div class="field"><label for="category">分类</label><select id="category"><option>视频娱乐</option><option>AI 工具</option><option>音乐</option><option>云服务</option></select></div>
+        <div class="field"><label for="platform">平台名称 <span class="muted">*</span></label><input id="platform" placeholder="例如：Netflix" autocomplete="organization" /></div>
+        <div class="field">
+          <label>平台图标 <span class="muted">*</span></label>
+          <div class="brand-picker">
+            ${SUBSCRIPTIONS.map((item) => `<span class="brand-option" style="background:${item.accent}">${escapeHtml(item.platform.slice(0, 1))}</span>`).join("")}
+            <span class="brand-option add">${icon("plus")}</span>
+          </div>
+        </div>
         <div class="field"><label for="account">主账号</label><input id="account" type="email" value="account@example.com" autocomplete="email" /></div>
-        <div class="field"><label for="renewal">续费日期</label><input id="renewal" type="date" value="2027-08-25" /></div>
-        <div class="field"><label for="capacity">车位数</label><input id="capacity" type="number" min="1" value="5" /></div>
-        <div class="field"><label for="cost">订阅成本</label><input id="cost" type="number" min="0" value="129" /></div>
-        <div class="field full"><label for="note">备注</label><textarea id="note">共享规则、登录限制、备用验证码接收方式。</textarea></div>
+        <div class="field">
+          <label>容量配置 <span class="muted">*</span></label>
+          <div class="segmented"><span class="segment active">5 个</span><span class="segment">6 个</span><span class="segment">7 个</span><span class="segment">自定义</span></div>
+        </div>
+        <div class="field"><label for="cost">会员费用</label><input id="cost" type="number" min="0" value="139" /></div>
+        <div class="field"><label for="cycle">计费周期</label><select id="cycle"><option>月付</option><option>季付</option><option>年付</option></select></div>
+        <div class="field"><label for="renewal">下次续费日期</label><input id="renewal" type="date" value="2027-08-25" /></div>
+        <div class="field"><label for="category">分类</label><select id="category"><option>视频娱乐</option><option>AI 工具</option><option>音乐</option><option>云服务</option></select></div>
+        <div class="field full"><label for="note">备注</label><textarea id="note">可记录套餐类型、购买渠道、登录限制和验证码接收方式。</textarea></div>
+        <div class="rule-box">
+          <strong>默认提醒规则</strong><span class="muted">（可在设置中修改）</span>
+          <div class="rule-list">
+            <div class="rule-item"><span class="metric-icon tone-blue">${icon("bell")}</span><span><strong>到期前 7 天</strong><br><span class="muted">发送首次提醒</span></span></div>
+            <div class="rule-item"><span class="metric-icon tone-orange">${icon("bell")}</span><span><strong>到期前 3 天</strong><br><span class="muted">发送二次提醒</span></span></div>
+            <div class="rule-item"><span class="metric-icon tone-red">${icon("bell")}</span><span><strong>到期当天</strong><br><span class="muted">发送当天提醒</span></span></div>
+          </div>
+        </div>
         <div class="field full"><button class="button primary" type="button">${icon("plus")}保存订阅</button></div>
       </form>
     </section>
@@ -814,6 +1019,7 @@ function renderMembersPage(env: Env): string {
   const actions = `<button class="button primary" type="button">${icon("plus")}添加成员</button>`;
   const content = `
     ${renderSearch("搜索成员姓名 / 邮箱 / 手机")}
+    ${renderFilterBar(["状态：全部", "拥有订阅数：全部", "下次续费：全部"])}
     <section class="panel">
       <div class="panel-head">
         <h2>成员列表</h2>
@@ -857,18 +1063,23 @@ function renderMemberDetail(env: Env, member: AppMember, url: URL): string {
   const content = `
     <div class="detail-grid">
       <div style="display:grid; gap:20px;">
-        <section class="panel">
-          <div class="panel-head"><h2>成员资料</h2>${badge(member.status)}</div>
-          <div class="card" style="border:0; box-shadow:none;">
-            <div class="entity">
-              ${avatar(member.name, "orange")}
-              <span><strong>${escapeHtml(member.name)}</strong><small>${escapeHtml(member.phone)} · ${escapeHtml(member.email)}</small></span>
+        <section class="panel profile-panel">
+          <div class="profile-top">
+            <div class="profile-photo">${escapeHtml(member.name.slice(0, 1))}</div>
+            <div class="profile-copy">
+              <h2>${escapeHtml(member.name)} ${badge("普通成员")}</h2>
+              <p>${icon("mail")}${escapeHtml(member.email)}</p>
+              <p>${icon("phone")}${escapeHtml(member.phone)}</p>
             </div>
-            <div class="facts">
-              <div class="fact"><span>绑定订阅</span><strong>${member.subscriptions.length}</strong></div>
-              <div class="fact"><span>每月费用</span><strong>${money(member.monthlyFee)}</strong></div>
-              <div class="fact"><span>下次续费</span><strong>${escapeHtml(member.dueDate)}</strong></div>
+            <div class="status-line">
+              <span><i class="status-dot"></i> 状态：<strong>${escapeHtml(member.status)}</strong></span>
+              <span>加入时间：2026-06-20</span>
             </div>
+          </div>
+          <div class="facts">
+            <div class="fact"><span>拥有订阅</span><strong>${member.subscriptions.length} 个</strong></div>
+            <div class="fact"><span>每月费用</span><strong>${money(member.monthlyFee)}</strong></div>
+            <div class="fact"><span>下次续费</span><strong>${escapeHtml(member.dueDate)}</strong></div>
           </div>
         </section>
         <section class="panel">
@@ -934,26 +1145,67 @@ function renderRemoveModal(member: AppMember, subscriptionId: string | null): st
 
 function renderRemindersPage(env: Env): string {
   const summary = getSummary();
+  const expiredCount = summary.renewals.filter((item) => item.status === "已过期").length;
+  const activeRuleCount = REMINDER_RULES.filter((rule) => rule.enabled).length;
   const reminderItems = [
-    ...summary.renewals.map((item) => ({ title: `${item.platform} 续费状态`, detail: item.renewalDate, status: item.status })),
-    ...summary.unpaid.map((item) => ({ title: `${item.member} 未付款`, detail: `${item.platform} · ${item.dueDate}`, status: "待发送" }))
+    ...summary.renewals.map((item) => ({
+      title: item.platform,
+      type: "主账号续费",
+      detail: item.account,
+      dueDate: item.renewalDate,
+      amount: item.cost,
+      seats: `${item.members.length} / ${item.capacity}`,
+      status: item.status === "已过期" ? "未处理" : "待发送"
+    })),
+    ...summary.unpaid.map((item) => ({
+      title: item.platform,
+      type: "未付款提醒",
+      detail: item.member,
+      dueDate: item.dueDate,
+      amount: 0,
+      seats: "-",
+      status: "未付款"
+    }))
   ];
   const actions = `<button class="button primary" type="button">${icon("plus")}新增规则</button>`;
   const content = `
+    <section class="kpis compact" aria-label="提醒指标">
+      <article class="metric-card"><div><span>待处理提醒</span><strong>${reminderItems.length}</strong><small>含主账号和车友</small></div><span class="metric-icon tone-blue">${icon("bell")}</span></article>
+      <article class="metric-card"><div><span>未付款提醒</span><strong>${summary.unpaid.length}</strong><small>需要跟进收款</small></div><span class="metric-icon tone-orange">${icon("credit")}</span></article>
+      <article class="metric-card"><div><span>已过期账号</span><strong>${expiredCount}</strong><small>优先处理续费</small></div><span class="metric-icon tone-red">${icon("calendar")}</span></article>
+      <article class="metric-card"><div><span>启用规则</span><strong>${activeRuleCount}</strong><small>Telegram 自动发送</small></div><span class="metric-icon tone-purple">${icon("refresh")}</span></article>
+    </section>
     <div class="section-grid">
       <section class="panel">
-        <div class="panel-head"><h2>提醒队列</h2><span>${reminderItems.length} 条待处理</span></div>
-        <div class="timeline">
-          ${reminderItems
-            .map(
-              (item) => `
-          <div class="timeline-item">
-            <span class="timeline-dot">${icon("bell")}</span>
-            <span><strong>${escapeHtml(item.title)}</strong><br><span class="muted">${escapeHtml(item.detail)}</span></span>
-            ${badge(item.status)}
-          </div>`
-            )
-            .join("")}
+        <div class="tabs">
+          <a class="tab active" href="/reminders">全部提醒 (${reminderItems.length})</a>
+          <a class="tab" href="/reminders">主账号 (2)</a>
+          <a class="tab" href="/reminders">车友 (3)</a>
+          <a class="tab" href="/reminders">未付款 (2)</a>
+        </div>
+        <div style="padding:18px 18px 0;">
+          ${renderFilterBar(["全部平台", "全部类型", "全部状态", "到期时间"])}
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>订阅信息</th><th>提醒类型</th><th>到期日期</th><th>金额</th><th>座位使用</th><th>状态</th><th>操作</th></tr></thead>
+            <tbody>
+              ${reminderItems
+                .map(
+                  (item) => `
+                <tr>
+                  <td data-label="订阅信息"><span class="entity">${icon("bell")}<span><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.detail)}</small></span></span></td>
+                  <td data-label="提醒类型"><strong>${escapeHtml(item.type)}</strong><br><span class="muted">自动提醒</span></td>
+                  <td data-label="到期日期">${escapeHtml(item.dueDate)}</td>
+                  <td data-label="金额">${item.amount > 0 ? `${money(item.amount)} / 期` : "-"}</td>
+                  <td data-label="座位使用">${escapeHtml(item.seats)}</td>
+                  <td data-label="状态">${badge(item.status)}</td>
+                  <td data-label="操作"><div class="row-actions"><button class="button primary" type="button">处理</button><button class="button" type="button">延后</button></div></td>
+                </tr>`
+                )
+                .join("")}
+            </tbody>
+          </table>
         </div>
       </section>
       <aside class="panel">
@@ -976,7 +1228,7 @@ function renderRemindersPage(env: Env): string {
 }
 
 function renderCalendarPage(env: Env): string {
-  const actions = `<button class="button" type="button">${icon("calendar")}过去 24 小时</button><button class="icon-button" aria-label="刷新">${icon("refresh")}</button>`;
+  const actions = `<button class="button" type="button">${icon("calendar")}月视图</button><button class="icon-button" aria-label="刷新">${icon("refresh")}</button>`;
   const weekdays = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
   const events: Record<number, Subscription[]> = {
     5: [SUBSCRIPTIONS[1]],
@@ -987,23 +1239,38 @@ function renderCalendarPage(env: Env): string {
   };
   const days = Array.from({ length: 35 }, (_, index) => index + 1);
   const content = `
-    <section class="panel">
-      <div class="panel-head"><h2>2027 年 8 月</h2><span>${SUBSCRIPTIONS.length} 个续费节点</span></div>
-      <div class="calendar">
-        ${weekdays.map((day) => `<div class="weekday">${day}</div>`).join("")}
-        ${days
-          .map(
-            (day) => `
-        <div class="day">
-          <b>${day}</b>
-          ${(events[day] ?? [])
-            .map((item) => `<a class="event" href="/subscriptions/${item.id}">${escapeHtml(item.platform)} · ${money(item.cost)}</a>`)
+    <div class="calendar-layout">
+      <section class="panel">
+        <div class="calendar-tools">
+          <button class="icon-button previous" aria-label="上个月">${icon("chevron")}</button>
+          <div class="calendar-title">2027 年 8 月</div>
+          <button class="button" type="button">今天</button>
+        </div>
+        <div class="calendar">
+          ${weekdays.map((day) => `<div class="weekday">${day}</div>`).join("")}
+          ${days
+            .map(
+              (day) => `
+          <div class="day">
+            <b>${day}</b>
+            ${(events[day] ?? [])
+              .map((item, index) => `<a class="event ${index % 3 === 0 ? "green" : index % 3 === 1 ? "orange" : "red"}" href="/subscriptions/${item.id}">${escapeHtml(item.platform)} · ${money(item.cost)}</a>`)
+              .join("")}
+          </div>`
+            )
             .join("")}
-        </div>`
-          )
-          .join("")}
-      </div>
-    </section>
+        </div>
+        <div class="legend"><span><i style="background:#22c55e"></i>主账号续费</span><span><i style="background:#f97316"></i>车友续费</span><span><i style="background:#ef4444"></i>未付款提醒</span></div>
+      </section>
+      <aside class="panel">
+        <div class="panel-head"><h2>2027-08-13</h2><span>2 个事件</span></div>
+        <div class="sidebar-list">
+          <div class="list-item"><span class="mini-icon">${icon("credit")}</span><span><strong>Netflix 主账号续费</strong><small>01 号车位 · ${money(139)}</small></span>${icon("chevron", "chevron")}</div>
+          <div class="list-item"><span class="mini-icon">${icon("bell")}</span><span><strong>钱七 未付款提醒</strong><small>自动提醒 · ${money(40)}</small></span>${icon("chevron", "chevron")}</div>
+          <div class="info-note">${icon("link")}日历显示所有订阅的下次续费日期，点击日期可查看当天事件。</div>
+        </div>
+      </aside>
+    </div>
   `;
 
   return layout(env, "calendar", "续费日历", content, actions);
@@ -1011,30 +1278,47 @@ function renderCalendarPage(env: Env): string {
 
 function renderFinancePage(env: Env): string {
   const summary = getSummary();
-  const maxIncome = Math.max(...FINANCE_ROWS.map((row) => row.income));
-  const actions = `<a class="button" href="/api/summary">${icon("link")}摘要 API</a>`;
+  const actions = `<button class="button" type="button">${icon("calendar")}2027-04 ~ 2027-07</button><a class="button" href="/api/summary">${icon("link")}摘要 API</a>`;
+  const breakdown = [
+    ["Netflix", 45, money(210), "#ef4444"],
+    ["Spotify", 25, money(120), "#22c55e"],
+    ["YouTube Premium", 15, money(150), "#2563eb"],
+    ["Disney+", 10, money(270), "#f97316"],
+    ["ChatGPT Plus", 5, money(180), "#14b8a6"]
+  ];
   const content = `
     ${renderKpis()}
-    <div class="section-grid">
-      <section class="panel">
-        <div class="panel-head"><h2>月度收入趋势</h2><span>近 4 个账期</span></div>
-        <div class="bars">
-          ${FINANCE_ROWS.map(
-            (row) => `
-          <div class="bar-row">
-            <strong>${escapeHtml(row.month)}</strong>
-            <div class="bar-track" aria-hidden="true"><span style="width:${Math.round((row.income / maxIncome) * 100)}%"></span></div>
-            <span>${money(row.income)}</span>
-          </div>`
-          ).join("")}
+    <div class="finance-grid">
+      <section class="panel chart-card">
+        <div class="chart-head">
+          <h2>收入 / 成本 / 利润趋势</h2>
+          <button class="filter-pill" type="button">按月 ${icon("chevron")}</button>
         </div>
+        <svg class="line-chart" viewBox="0 0 640 280" role="img" aria-label="收入成本利润趋势图">
+          <line class="grid-line" x1="54" y1="42" x2="610" y2="42"></line>
+          <line class="grid-line" x1="54" y1="98" x2="610" y2="98"></line>
+          <line class="grid-line" x1="54" y1="154" x2="610" y2="154"></line>
+          <line class="grid-line" x1="54" y1="210" x2="610" y2="210"></line>
+          <text x="18" y="46">1,000</text><text x="24" y="102">750</text><text x="24" y="158">500</text><text x="24" y="214">250</text>
+          <polyline points="70,202 210,176 350,138 490,120 610,92" fill="none" stroke="#f97316" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline>
+          <polyline points="70,222 210,205 350,188 490,168 610,156" fill="none" stroke="#ef4444" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline>
+          <polyline points="70,238 210,216 350,182 490,152 610,132" fill="none" stroke="#22c55e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline>
+          <text x="70" y="260">4月</text><text x="205" y="260">5月</text><text x="346" y="260">6月</text><text x="486" y="260">7月</text><text x="590" y="260">本月</text>
+        </svg>
+        <div class="legend"><span><i style="background:#f97316"></i>收入</span><span><i style="background:#ef4444"></i>成本</span><span><i style="background:#22c55e"></i>利润</span></div>
       </section>
       <aside class="panel">
-        <div class="panel-head"><h2>本期结算</h2><span>${percent(summary.profitRate)}</span></div>
-        <div class="sidebar-list">
-          <div class="list-item"><span class="mini-icon">${icon("credit")}</span><span><strong>${money(summary.income)}</strong><small>总收入</small></span></div>
-          <div class="list-item"><span class="mini-icon">${icon("chart")}</span><span><strong>${money(summary.cost)}</strong><small>总成本</small></span></div>
-          <div class="list-item"><span class="mini-icon">${icon("shield")}</span><span><strong>${money(summary.profit)}</strong><small>净利润</small></span></div>
+        <div class="panel-head"><h2>订阅收入占比</h2><span>${money(summary.income)}</span></div>
+        <div class="donut-wrap">
+          <div class="donut"><strong>${money(summary.income)}</strong></div>
+          <div class="breakdown">
+            ${breakdown
+              .map(
+                ([name, ratio, amount, color]) => `
+              <div class="breakdown-row"><i style="background:${color}"></i><span>${escapeHtml(String(name))}</span><strong>${ratio}% · ${amount}</strong></div>`
+              )
+              .join("")}
+          </div>
         </div>
       </aside>
     </div>
@@ -1062,14 +1346,46 @@ function renderSettingsPage(env: Env): string {
   const content = `
     <div class="detail-grid">
       <section class="panel">
-        <div class="panel-head"><h2>Telegram 设置</h2><span>通知通道</span></div>
+        <div class="settings-tabs">
+          <a href="/settings">账号设置</a>
+          <a href="/settings">通知设置</a>
+          <a class="active" href="/settings">Telegram 设置</a>
+          <a href="/settings">费用设置</a>
+          <a href="/settings">数据备份</a>
+        </div>
+        <div class="telegram-head">
+          <span class="telegram-logo">${icon("send")}</span>
+          <div>
+            <h2 style="margin:0 0 6px;">Telegram 通知设置</h2>
+            <p class="muted" style="margin:0;">通过 Telegram Bot 接收订阅通知，并及时掌握订阅动态。</p>
+          </div>
+        </div>
         <form class="form-grid">
           <div class="field"><label for="bot-token">Bot Token</label><input id="bot-token" type="password" value="123456:••••••••••••••" autocomplete="off" /></div>
           <div class="field"><label for="chat-id">Chat ID</label><input id="chat-id" value="-100520126" autocomplete="off" /></div>
           <div class="field"><label for="timezone">默认时区</label><select id="timezone"><option>Asia/Shanghai</option><option>UTC</option></select></div>
           <div class="field"><label for="send-time">发送时间</label><input id="send-time" type="time" value="09:00" /></div>
-          <div class="field full"><label for="template">提醒模板</label><textarea id="template">别忘订阅：{{platform}} 将于 {{date}} 续费，应收 {{amount}}。</textarea></div>
+          <div class="field full"><span class="badge success">已连接</span><span class="muted">上次测试时间：2026-07-25 16:30:45</span></div>
+          <div class="field full"><button class="button" type="button">${icon("send")}发送测试消息</button></div>
         </form>
+        <div style="padding:0 22px 22px;">
+          ${[
+            ["主账号续费提醒", "当主账号即将到期时，发送续费提醒通知", "提前 3 天", "refresh", "tone-blue"],
+            ["车友续费提醒", "当车友账号即将到期时，发送续费提醒通知", "提前 3 天", "users", "tone-green"],
+            ["未付款提醒", "当有未付款订单时，发送提醒通知", "提前 1 天", "credit", "tone-orange"],
+            ["空位提醒", "当车位有空闲位置时，发送提醒通知", "立即提醒", "settings", "tone-purple"]
+          ]
+            .map(
+              ([title, desc, time, iconName, tone]) => `
+            <div class="setting-row">
+              <span class="metric-icon ${tone}">${icon(iconName)}</span>
+              <span><strong>${escapeHtml(title)}</strong><br><span class="muted">${escapeHtml(desc)}</span></span>
+              <select aria-label="${escapeHtml(title)}提醒时间"><option>${escapeHtml(time)}</option></select>
+              <button class="toggle" type="button" aria-label="${escapeHtml(title)}已启用"></button>
+            </div>`
+            )
+            .join("")}
+        </div>
       </section>
       <aside class="panel">
         <div class="panel-head"><h2>系统偏好</h2><span>V8</span></div>
